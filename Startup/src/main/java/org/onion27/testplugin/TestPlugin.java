@@ -28,9 +28,9 @@ public final class TestPlugin extends JavaPlugin implements Listener {
     private  String[] HOME_COMMANDS = {
             "set", "visit", "go"
     };
-    private File homesSaveFile = new File(getDataFolder(),"./TestPlugin/.player_home_info");
+    private File homesSaveFile = new File(getDataFolder(),"./.player_home_info");
     private YamlConfiguration homesConfig = new YamlConfiguration();
-    public final String pluginVersion = "SNAPSHOT-21d168a";
+    public final String pluginVersion = "SNAPSHOT-21d168b";
 
     @Override
     public void onEnable() {
