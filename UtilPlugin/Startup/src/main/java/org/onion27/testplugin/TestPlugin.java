@@ -43,7 +43,7 @@ public final class TestPlugin extends JavaPlugin implements Listener {
     private final YamlConfiguration homesConfig = new YamlConfiguration();
     private final YamlConfiguration walletConfig = new YamlConfiguration();
     private final YamlConfiguration genericConfig = new YamlConfiguration();
-    public final String pluginVersion = "SNAPSHOT-21d169g";
+    public final String pluginVersion = "SNAPSHOT-21d170a";
 
     @Override
     public void onEnable() {
@@ -315,7 +315,7 @@ public final class TestPlugin extends JavaPlugin implements Listener {
                                     another.sendRawMessage(ChatColor.AQUA + player.getDisplayName() + "Type \"/util input y\" to allow it. Or type \"/util input n\" to reject. Default \"n\".");
                                     player.sendRawMessage("We sent the message. Please wait.");
                                     inputBuffer.put(another.getDisplayName(), msg -> {
-                                        if(msg.equalsIgnoreCase("y")) {
+                                        if(msg.equalsIgnoreCase("y ")) {
                                             Location location = (Location) homesConfig.get(args[2]);
                                             if (location != null) {
                                                 player.teleport(location);
@@ -386,7 +386,7 @@ public final class TestPlugin extends JavaPlugin implements Listener {
                                             player.sendRawMessage(ChatColor.RED + "Player don't exist.");
                                             return false;
                                         }
-                                        if(walletConfig.contains(playerToSend.getDisplayName())) {
+                                        if(!walletConfig.contains(playerToSend.getDisplayName())) {
                                             player.sendRawMessage(ChatColor.RED + "Player don't have a wallet.");
                                             return false;
                                         }
