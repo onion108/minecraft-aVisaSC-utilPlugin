@@ -1,0 +1,9 @@
+name: UtilPlugin
+version: '${project.version}'
+main: org.onion27.testplugin.TestPlugin
+api-version: 1.16
+prefix: Nah
+commands:
+  util:
+    description: The utility command.
+    usage: util <subcommand> [args]
