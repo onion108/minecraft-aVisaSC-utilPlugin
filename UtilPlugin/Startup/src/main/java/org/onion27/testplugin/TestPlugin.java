@@ -26,7 +26,7 @@ public final class TestPlugin extends JavaPlugin implements Listener {
     private Map<String, InputHandler> inputBuffer = new HashMap<>();
     private final String[] ARG0_COMMANDS = {
             "version", "home", "gamemode", "gmo", "echo", "init", "tp", "tpo", "fly", "down",
-            "setHealth", "me", "wolfys", "wallet", "say", "input"
+            "setHealth", "me", "wolfys", "wallet", "say", "input", "bank"
     };
     private final String[] HOME_COMMANDS = {
             "set", "visit", "go"
@@ -34,11 +34,16 @@ public final class TestPlugin extends JavaPlugin implements Listener {
     private  final String[] WALLET_COMMANDS = {
             "check", "send"
     };
+    private  final  String[] BANK_COMMANDS = {
+            "send"
+    };
     private final File homesSaveFile = new File(getDataFolder(),"./.player_home_info");
     private final File walletSaveFile = new File(getDataFolder(), "./.player_wallet_info");
+    private final File genericConfigFile = new File(getDataFolder(), "./.generic_config.yml");
     private final YamlConfiguration homesConfig = new YamlConfiguration();
     private final YamlConfiguration walletConfig = new YamlConfiguration();
-    public final String pluginVersion = "SNAPSHOT-21d169b";
+    private final YamlConfiguration genericConfig = new YamlConfiguration();
+    public final String pluginVersion = "SNAPSHOT-21d169g";
 
     @Override
     public void onEnable() {
@@ -69,7 +74,7 @@ public final class TestPlugin extends JavaPlugin implements Listener {
             } catch (IOException e) {
                 getLogger().info("Fuck you");
             } catch (InvalidConfigurationException e) {
-                getLogger().info("And fuck you, too at line 72");
+                getLogger().info("And fuck you, too at line 77");
             }
             readConfig();
         }
@@ -88,6 +93,25 @@ public final class TestPlugin extends JavaPlugin implements Listener {
                 getLogger().info("Fuck 27Onion");
             }
         }
+        if(!genericConfigFile.exists()) {
+            try {
+                genericConfigFile.createNewFile();
+            } catch(IOException e) {
+                getLogger().info("Can't create the config.");
+            }
+        } else {
+            try {
+                genericConfig.load(walletSaveFile);
+            } catch (IOException e) {
+                getLogger().info("Fuck Sudierth 2");
+            } catch (InvalidConfigurationException e) {
+                getLogger().info("Fuck 27Onion 2");
+            }
+        }
+        // Create keys if not exist yet
+        if(!genericConfig.contains("_key_bank_total")) {
+            genericConfig.set("_key_bank_total", Integer.MAX_VALUE);
+        }
         getLogger().info("Util: Config file at" + configFile.getAbsolutePath());
         getLogger().info("Util: Config folder at" + getDataFolder().getAbsolutePath());
         getLogger().info("\n=====================END======================");
@@ -103,6 +127,7 @@ public final class TestPlugin extends JavaPlugin implements Listener {
         try {
             homesConfig.save(homesSaveFile);
             walletConfig.save(walletSaveFile);
+            genericConfig.save(genericConfigFile);
         } catch (IOException e) {
             getLogger().info("Never gonna give you up");
         }
@@ -352,6 +377,31 @@ public final class TestPlugin extends JavaPlugin implements Listener {
                                     }
                             }
                             break;
+                        case "bank":
+                            if(isInArray(OP_LIST, player.getDisplayName())) {
+                                switch (args[1]) {
+                                    case "send":
+                                        Player playerToSend = Bukkit.getPlayer(args[2]);
+                                        if(playerToSend == null) {
+                                            player.sendRawMessage(ChatColor.RED + "Player don't exist.");
+                                            return false;
+                                        }
+                                        if(walletConfig.contains(playerToSend.getDisplayName())) {
+                                            player.sendRawMessage(ChatColor.RED + "Player don't have a wallet.");
+                                            return false;
+                                        }
+                                        Integer money = Integer.parseInt(args[3]);
+                                        Integer moneyInBank = (Integer) genericConfig.get("_key_bank_total");
+                                        if(moneyInBank - money >= 0) {
+                                            moneyInBank -= money;
+                                            genericConfig.set("_key_bank_total", moneyInBank);
+                                            Integer a = (Integer) walletConfig.get(playerToSend.getDisplayName());
+                                            walletConfig.set(playerToSend.getDisplayName(), a + money);
+                                        }
+                                }
+                            } else {
+                                player.sendRawMessage(ChatColor.RED + "FUCK YOU! YOU AREN'T AN OP!!!!!");
+                            }
                         default:
                             player.sendRawMessage("FUCK! WHAT ARE YOU TYPING! WE CAN'T FIND " + args[0] + " !");
                             break;
@@ -382,7 +432,7 @@ public final class TestPlugin extends JavaPlugin implements Listener {
             if(args.length == 1) {
                 return Arrays.asList(WALLET_COMMANDS);
             } else if(args.length == 2) {
-                return Arrays.stream(HOME_COMMANDS)
+                return Arrays.stream(WALLET_COMMANDS)
                         .filter(s -> s.startsWith(args[1]))
                         .collect(Collectors.toList());
             }
