@@ -341,6 +341,7 @@ public final class TestPlugin extends JavaPlugin implements Listener {
                             String name = player.getDisplayName();
                             if(inputBuffer.containsKey(name)) {
                                 inputBuffer.get(name).onInput(msg);
+                                inputBuffer.remove(name); // Processed
                             }
                             break;
                         case "wallet":
