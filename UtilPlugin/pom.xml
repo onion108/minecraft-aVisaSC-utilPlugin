@@ -6,7 +6,7 @@
 
     <groupId>org.onion27</groupId>
     <artifactId>UtilPlugin</artifactId>
-    <version>SNAPSHOT-21d168b</version>
+    <version>SNAPSHOT-21d169a</version>
     <packaging>jar</packaging>
 
     <name>UtilPlugin</name>
